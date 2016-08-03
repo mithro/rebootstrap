@@ -347,6 +347,14 @@ check_arch() {
 				return 1
 			fi
 		;;
+		*", LatticeMico32, version "*)
+			if test lm32 != "$(dpkg-architecture "-a$2" -qDEB_HOST_ARCH_CPU)"; then
+				echo "cpu mismatch"
+				echo "expected $2"
+				echo "got $FILE_RES"
+				return 1
+			fi
+		;;
 		*)
 			echo "unknown ELF cpu"
 			echo "got $FILE_RES"
@@ -396,6 +404,10 @@ fi
 obtain_source_package() {
 	drop_privs apt-get source "$1"
 }
+
+cat <<EOF >> /usr/share/dpkg/cputable
+lm32		lm32		lm32		32	big
+EOF
 
 if test -z "$HOST_ARCH" || ! dpkg-architecture "-a$HOST_ARCH"; then
 	echo "architecture $HOST_ARCH unknown to dpkg"
